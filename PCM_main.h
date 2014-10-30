@@ -7,7 +7,7 @@
 #define ezhr4axis // otherwise setting is for ezhr 23
 
 unsigned int8 resetStatus;
-
+// messed with this with Craig
 enum 
       {
       STACKTASK, TCPTASK, 
