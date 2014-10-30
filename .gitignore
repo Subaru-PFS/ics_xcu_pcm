@@ -1,3 +1,14 @@
-/_history/
-/__history/
 __history/
+*.ccspjt
+*.cof
+*.err
+*.esym
+*.hex
+*.lst
+*.STA
+*.map
+*.sym
+*.tre
+*.xsym
+*~
+#*#
