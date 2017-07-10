@@ -3,7 +3,8 @@
 
 NODE_INFO remNode;
 #include <TCPIPConfig.h>
-#include <PCM_CmdHandler.c>
+#include <PCM_CmdHandler2.c>
+//#include <PCM_CmdHandler.c>
 #include <PCM_MACProm.h>
 
 /*********************************************************************
@@ -52,16 +53,16 @@ void IPAddressInit(void)
 
 BOOL TCPConnectedTask(TCP_SOCKET s)
 {
-   char rxData[60]={NULL};
+   char rxData[80]={NULL};
    BOOL result = FALSE;
    int8 i = 0;
-   if (TCPIsPutReady(s)>60)
+   if (TCPIsPutReady(s)>80)
    {
       while (TCPIsGetReady(s))
       {
          TCPGet(s,&rxData[i]);
          i+=1;
-         if (i==60) 
+         if (i==80) 
          {
             break;
          }   

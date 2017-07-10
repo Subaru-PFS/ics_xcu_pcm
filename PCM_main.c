@@ -1,4 +1,8 @@
+//#define revision "PFS PCM Rev: 20170202-01 copyright JHU"
+#define revision "PFS PCM Rev: 20170620-01 copyright JHU"
 #include <PCM_main.h>
+#org 0x1E800, 0x1FFF6 {}
+
 #include <PCM_TCPTask.h>
 #include <PCM_UDPTask.h>
 
@@ -21,8 +25,15 @@ void ssp_interupt ()
 /************************************************************************
 * START OF MAIN                                                         *
 ************************************************************************/
+
 void main()
 {
+   union {
+      unsigned int32 hours;
+      unsigned int8 minutes;
+      unsigned int8 seconds;} upTime;
+   
+   
    TICK_TYPE CurrentTick,PreviousUDPTick,PreviousSATick;
    resetStatus = (RCON & 0b00111111) | !(STKPTR & 0b11000000); // Get the Reset Status
    RCON = RCON | 0b00111111; //Reset RCON Reset flags... (Reset Register)
@@ -35,6 +46,7 @@ void main()
    IPAddressInit();  //set up MAC and default IP addresses
    delay_ms(500); 
    ADCInit();        //set up ADC ports
+   iniADCParams();    
    SerialInit();     //set up serial ports
    TickInit();       //set up tick timer
    enable_interrupts(INT_RDA);
@@ -50,7 +62,7 @@ void main()
    output_high(RS232_F_ON);
    CurrentTick = PreviousUDPTick = get_ticks();
    UDPSampleRate = eeReadUDPRate() * TICKS_PER_MILLISECOND;
-   
+   portControlInit();
    while(TRUE)
    {
       CurrentTick = get_ticks();
@@ -59,16 +71,16 @@ void main()
       restart_wdt();
       MyTCPTask();//handles TCP connections
       restart_wdt();
-      
-      if(CurrentTick-PreviousUDPTick >= UDPSampleRate)
-      {
-         currentRoutine=UDPTASK;
-         BOOL UDPDone = MyUDPTask();
-         if(UDPDone) 
-         {
-            PreviousUDPTick=CurrentTick;
-         }
-      }
+      setIO();// checks voltage status and sets ports accordingly
+//!      if(CurrentTick-PreviousUDPTick >= UDPSampleRate)
+//!      {
+//!         currentRoutine=UDPTASK;
+//!         BOOL UDPDone = MyUDPTask();
+//!         if(UDPDone) 
+//!         {
+//!            PreviousUDPTick=CurrentTick;
+//!         }
+//!      }
       StackApplications();
    }
 }

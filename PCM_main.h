@@ -1,5 +1,8 @@
 #include <18F67J60.h>
+
+//#device icd=true
 #device ADC=10
+#device PASS_STRINGS=IN_RAM
 #define schDebug
 
 #define numEZHR 3
@@ -45,11 +48,11 @@ are defined in HardwareProfile.h.
 #FUSES WDT4096                  //Watch Dog Timer uses 1:4096 Postscale
 
 #use delay(crystal=25MHz,restart_wdt)
-#use timer(tick=100us,bits=32,NOISR)
+#use timer(timer=3,tick=1ms,define=ticksPerSecond,bits=32, NOISR)
 #use fast_IO(ALL)
 
-#define TICK_TYPE unsigned int32
-#define TICKS_PER_MILLISECOND (TICKS_PER_SECOND/1000)
+typedef unsigned int16 TICK_TYPE;
+#define TICKS_PER_MILLISECOND ((float)ticksPerSecond/1000)
 unsigned int16 UDPSampleRate = 20*TICKS_PER_MILLISECOND;
 
 #if defined(__PCH__)
@@ -93,17 +96,10 @@ typedef struct EZHR23 {
 
 #ORG 0x10000, 0x103FF{} // reserve 1 block at this location for settings
 #define romEZHR 0x10000
-//!ROM struct EZHR23 romEZHR[numEZHR]=
-//!   {
-//!      0.018,0,30,50,20,200,1500,200,2,
-//!      0.010,0,30,50,20,200,1500,200,2,
-//!      0.018,0,30,50,20,200,1500,200,2
-//!   };
-//!//#ORG 0x800   
+
 #ORG default
 
 
 
-//#ORG default
 
 
