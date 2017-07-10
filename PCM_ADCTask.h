@@ -72,14 +72,11 @@ void set_adc_MUX(int8 taskID)
 * Returns a scaled float value                                       *
 * scales output using divFactor and Offset values                    *
 *********************************************************************/
-float adc_to_float(unsigned int32 rawADCvalue,float divFactor, float offset)
+float adc_to_float(unsigned int32 rawADCvalue,float gain, float offset)
 {
    float myflt = rawADCvalue;
 
-   if (myflt!=0) 
-   myflt=(myflt/divFactor)-offset;
-   else 
-   myflt = 0;
+   myflt=(myflt*gain)-offset;
      
    return(myflt);
 }
@@ -101,6 +98,7 @@ BOOL ADCtask(UDP_SOCKET s)
    BOOL result = FALSE;
 
    restart_wdt();
+   int8 varID = (ADC_Task_ID+2)/2;
    switch(ADC_Task_ID)
    { 
       case 0:                         // IO Port Voltage Channels
@@ -111,7 +109,7 @@ BOOL ADCtask(UDP_SOCKET s)
       case 10:
       case 12:
       case 14:
-         sprintf(id,"V%d:" (ADC_Task_ID+2)/2);
+         sprintf(id,"V%d:",varID);
          set_adc_MUX(ADC_Task_ID);
          adc_flt = adc_to_float(read_adc(),VscalerPorts,VOSPorts);
          break;  
@@ -124,7 +122,7 @@ BOOL ADCtask(UDP_SOCKET s)
       case 11:
       case 13:
       case 15:
-         sprintf(id,"I%d:" (ADC_Task_ID+1)/2);
+         sprintf(id,"I%d:", varID);
          set_adc_MUX(ADC_Task_ID);
          adc_flt = adc_to_float(read_adc(),IscalerPorts,IOSPorts); 
          break;               

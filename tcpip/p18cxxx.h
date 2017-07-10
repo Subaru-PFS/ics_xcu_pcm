@@ -11,7 +11,7 @@
 #zero_ram
 
 
-#device PASS_STRINGS=IN_RAM
+//#device PASS_STRINGS=IN_RAM
 #device CONST=READ_ONLY
 
 #case

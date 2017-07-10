@@ -19,11 +19,18 @@ BOOL UART_BUFFER_OVERFLOW = FALSE;
 BOOL UART_GOT_STRING = FALSE;
 char rxChar = NULL;
 
-#use rs232(baud=9600,parity=N,xmit=PIN_C6,rcv=PIN_C7,bits=8,restart_wdt)
+//#use rs232(baud=9600,parity=N,xmit=PIN_C6,rcv=PIN_C7,bits=8,restart_wdt)
+
+#use rs232(parity=E,xmit=PIN_C6,rcv=PIN_C7,bits=8,restart_wdt,stream=STR8E1)
+#use rs232(parity=O,xmit=PIN_C6,rcv=PIN_C7,bits=8,restart_wdt,stream=STR8O1)
+#use rs232(parity=N,xmit=PIN_C6,rcv=PIN_C7,bits=8,restart_wdt,stream=STR8N1)
+#use rs232(parity=N,xmit=PIN_C6,rcv=PIN_C7,bits=8,stop=2,restart_wdt,stream=STR8N2)
+#use rs232(parity=E,xmit=PIN_C6,rcv=PIN_C7,bits=8,stop=2,restart_wdt,stream=STR8E2)
+#use rs232(parity=O,xmit=PIN_C6,rcv=PIN_C7,bits=8,stop=2,restart_wdt,stream=STR8O2)
 
 // UART RX Data Interupt ////////////////////////////////////////////////
 #int_RDA
-void  RDA_isr()
+void  RDA_isr() 
 {
    while(kbhit())
    {  
@@ -158,6 +165,11 @@ BOOL serialGetS(char *putStr, TICK_TYPE TO_Ticks, BOOL RS485)
 {
    TO_Ticks *=TICKS_PER_MILLISECOND;
    output_high(U_ACT);
+   
+   UART_GOT_STRING = FALSE;
+   UART_BUFFER_PTR = 0; // reset the pointer to allow packet receipt
+   UART_BUFFER[0]=0;
+   
    if(RS485)
    {
       serialSelect(e485TX);
@@ -174,9 +186,6 @@ BOOL serialGetS(char *putStr, TICK_TYPE TO_Ticks, BOOL RS485)
    }
    
    TICK_TYPE Tick_Start = TickGet();
-   UART_GOT_STRING = FALSE;
-   UART_BUFFER_PTR = 0; // reset the pointer to allow packet receipt
-   
    
    while ((TickGetDiff(TickGet(), Tick_Start) 
    <= TO_Ticks) && !UART_GOT_STRING)
@@ -188,5 +197,52 @@ BOOL serialGetS(char *putStr, TICK_TYPE TO_Ticks, BOOL RS485)
    output_low(U_ACT);
    return(UART_GOT_STRING);  
 }
+
+BOOL serialGetSs(char* putStr, char* retStr, TICK_TYPE TO_Ticks, BOOL RS485)
+{
+   TO_Ticks *=TICKS_PER_MILLISECOND;
+   output_high(U_ACT);
+   
+   UART_GOT_STRING = FALSE;
+   UART_BUFFER_PTR = 0; // reset the pointer to allow packet receipt
+   UART_BUFFER[0]=0;
+   
+   if(RS485)
+   {
+      serialSelect(e485TX);
+      delay_us(1000);
+      printf("%s\r\n",putStr);
+      delay_us(100);
+      serialSelect(e485RX);
+   }
+   else
+   {
+      serialSelect(e232);
+      delay_us(500);
+      printf("%s\r\n",putStr);
+   }
+   
+   unsigned int16 Tick_Start = TickGet();
+   BOOL timeout = FALSE;
+   while (!timeout && !UART_GOT_STRING)
+   {
+      StackTask();
+      unsigned int16 expiredTicks = TickGet()-Tick_Start;
+      if (expiredTicks > TO_Ticks ) timeout = TRUE;   
+   }
+   
+   if(UART_GOT_STRING)
+   {
+      UART_BUFFER_PTR = UART_BUFFER_SIZE; // Disable rx data
+      strcpy(retStr,UART_BUFFER);
+   }
+   else
+   {
+      strcpy(retStr,"\0");
+   }
+   output_low(U_ACT);
+   return(UART_GOT_STRING);  
+}
+   
 
 #endif
