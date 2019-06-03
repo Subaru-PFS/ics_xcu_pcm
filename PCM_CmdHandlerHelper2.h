@@ -30,7 +30,7 @@ struct ADCparams adcParams[]=       {
                                     };    
 
 typedef enum VIEtype {VIEvoltage=0, VIEcurrent=10, VIEenvironment=20};
-float readAnalogValues(VIEtype VIE, int8 index, int8 numSamples=1, BOOLEAN rawData = FALSE)
+float readAnalogValues(VIEtype VIE, int16 index, int8 numSamples=1, BOOLEAN rawData = FALSE)
 {
       index+=VIE;
       int8 reference = adcParams[index].refSource;
@@ -66,7 +66,7 @@ float readAnalogValues(VIEtype VIE, int8 index, int8 numSamples=1, BOOLEAN rawDa
       {
          adcVal += adc_to_float(read_adc(),scaler,offset);
       }
-      adcVal/=numSamples;
+      adcVal/=(float)numSamples;
       return adcVal;
 }
 

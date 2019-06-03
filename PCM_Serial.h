@@ -163,7 +163,7 @@ BOOL validateChkSum(char *cmd)
 
 BOOL serialGetS(char *putStr, TICK_TYPE TO_Ticks, BOOL RS485)
 {
-   TO_Ticks *=TICKS_PER_MILLISECOND;
+   //TO_Ticks *=TICKS_PER_MILLISECOND;
    output_high(U_ACT);
    
    UART_GOT_STRING = FALSE;
@@ -198,9 +198,9 @@ BOOL serialGetS(char *putStr, TICK_TYPE TO_Ticks, BOOL RS485)
    return(UART_GOT_STRING);  
 }
 
-BOOL serialGetSs(char* putStr, char* retStr, TICK_TYPE TO_Ticks, BOOL RS485)
+BOOL serialGetSs(char* putStr, char* retStr, unsigned int32 TO_Ticks, BOOL RS485)
 {
-   TO_Ticks *=TICKS_PER_MILLISECOND;
+   TO_Ticks *= TICKS_PER_MILLISECOND;
    output_high(U_ACT);
    
    UART_GOT_STRING = FALSE;
@@ -222,13 +222,13 @@ BOOL serialGetSs(char* putStr, char* retStr, TICK_TYPE TO_Ticks, BOOL RS485)
       printf("%s\r\n",putStr);
    }
    
-   unsigned int16 Tick_Start = TickGet();
+   unsigned int32 Tick_Start = TickGet();
    BOOL timeout = FALSE;
    while (!timeout && !UART_GOT_STRING)
    {
       StackTask();
-      unsigned int16 expiredTicks = TickGet()-Tick_Start;
-      if (expiredTicks > TO_Ticks ) timeout = TRUE;   
+      unsigned int32 expiredTicks = TickGet()-Tick_Start;
+      if (expiredTicks > (unsigned int32)TO_Ticks ) timeout = TRUE;   
    }
    
    if(UART_GOT_STRING)

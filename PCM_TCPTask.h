@@ -1,12 +1,12 @@
 #ifndef _pcm_tcp
 #define _pcm_tcp
 
-NODE_INFO remNode;
+//NODE_INFO remNode;
 #include <TCPIPConfig.h>
 #include <PCM_CmdHandler2.c>
 //#include <PCM_CmdHandler.c>
 #include <PCM_MACProm.h>
-
+NODE_INFO remNode;
 /*********************************************************************
 * IPAddressInit ROUTINE                                              *
 * Used to intialize the Ethernet MAC address                         *

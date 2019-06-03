@@ -328,9 +328,10 @@ void readCurrents()
       case _rp_all:
          sprintf(retData,"%f",readAnalogValues(VIEcurrent, 0, numSamples, rdRawData));
          char temp[10];
-         for (int i=1;i<10; i++)
+         for (int i = 1;i < 10; i++)
          {
-            sprintf(temp,", %f",readAnalogValues(VIEcurrent, i, numSamples, rdRawData));
+            float data = readAnalogValues(VIEcurrent, i, numSamples, rdRawData);
+            sprintf(temp,", %f", data);
             strcat(retData,temp);
             //StackApplications();
          }   

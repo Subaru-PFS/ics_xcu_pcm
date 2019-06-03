@@ -52,8 +52,8 @@ are defined in HardwareProfile.h.
 #use fast_IO(ALL)
 
 typedef unsigned int16 TICK_TYPE;
-#define TICKS_PER_MILLISECOND ((float)ticksPerSecond/1000)
-unsigned int16 UDPSampleRate = 20*TICKS_PER_MILLISECOND;
+
+
 
 #if defined(__PCH__)
    #define GetSystemClock()       getenv("CLOCK")
@@ -63,7 +63,7 @@ unsigned int16 UDPSampleRate = 20*TICKS_PER_MILLISECOND;
    #define GetSystemClock()       getenv("CLOCK")
    #define GetInstructionClock()  (GetSystemClock()/2)
    #define GetPeripheralClock()   (GetSystemClock()/2)
-#endif
+#endif 
 
 #define MIN(a,b)  ((a > b) ? b : a)
 
@@ -80,7 +80,8 @@ unsigned int16 UDPSampleRate = 20*TICKS_PER_MILLISECOND;
 //!BOOL exeEZHRtask = TRUE;
 #define E_LED_CONFIG  (int16)0b0011011101000010  // Ethernet LED Configuration
 
-
+#define TICKS_PER_MILLISECOND (unsigned int32)(TICKS_PER_SECOND/1000)
+unsigned int16 UDPSampleRate = 20*TICKS_PER_MILLISECOND;
 
 typedef struct EZHR23 {
    float          unitScaler;
@@ -98,8 +99,3 @@ typedef struct EZHR23 {
 #define romEZHR 0x10000
 
 #ORG default
-
-
-
-
-
